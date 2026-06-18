@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yash Parab — Colorist</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --white: #f5f0e8; --off: #ede7da; --ink: #2c2416; --mid: #7a6a52;
+  --light: #b5a48c; --accent: #8b5e3c; --accent2: #c4956a;
+  --line: #d9ceba; --section-bg: #e8e0d0;
+}
+html { scroll-behavior: smooth; }
+body { background:var(--white); color:var(--ink); font-family:'Karla',sans-serif; font-weight:300; font-size:15px; line-height:1.7; cursor:none; }
+body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:9997; opacity:0.022; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size:180px; }
+.cursor { width:8px; height:8px; background:var(--accent); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9999; }
+.cursor-ring { width:32px; height:32px; border:1px solid var(--accent); border-radius:50%; position:fixed; top:0; left:0; pointer-events:none; z-index:9998; opacity:0.45; }
+nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:22px 48px; background:transparent; border-bottom:1px solid transparent; transition:background 0.4s, border-color 0.4s; }
+nav.scrolled { background:rgba(245,240,232,0.96); backdrop-filter:blur(10px); border-color:var(--line); }
+.nav-logo { font-family:'Playfair Display',serif; font-size:17px; color:#fff; text-decoration:none; transition:color 0.4s; }
+nav.scrolled .nav-logo { color:var(--ink); }
+.nav-links { display:flex; gap:36px; list-style:none; }
+.nav-links a { font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.7); text-decoration:none; transition:color 0.2s; }
+.nav-links a:hover { color:#fff; }
+nav.scrolled .nav-links a { color:var(--mid); }
+nav.scrolled .nav-links a:hover { color:var(--ink); }
+.hero { min-height:100vh; display:flex; flex-direction:column; justify-content:flex-end; padding:0 48px 72px; position:relative; overflow:hidden; }
+.hero-video-wrap { position:absolute; inset:0; z-index:0; overflow:hidden; background:#0a0a0a; }
+.hero-video-wrap iframe { position:absolute; top:50%; left:50%; width:177.78vh; height:100vh; min-width:100%; min-height:56.25vw; transform:translate(-50%,-50%); border:none; pointer-events:none; }
+.hero-video-wrap::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom,rgba(20,12,4,0.3) 0%,rgba(20,12,4,0.1) 50%,rgba(20,12,4,0.75) 100%); }
+#heroVideoFade { position:absolute; inset:0; z-index:0; }
+.hero-label { position:relative; z-index:2; font-size:11px; letter-spacing:4px; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:20px; opacity:0; animation:fadeUp 0.8s ease 0.2s forwards; }
+.hero-name { position:relative; z-index:2; font-family:'Playfair Display',serif; font-size:clamp(52px,9vw,110px); font-weight:400; line-height:0.95; letter-spacing:-2px; color:#fff; opacity:0; animation:fadeUp 0.9s ease 0.4s forwards; }
+.hero-name em { font-style:italic; color:rgba(255,255,255,0.45); }
+.hero-reel-btn { position:relative; z-index:2; display:inline-flex; align-items:center; gap:10px; margin-top:28px; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:#f5f0e8; text-decoration:none; border:1px solid rgba(196,149,106,0.5); padding:11px 22px; transition:background 0.25s,border-color 0.25s; width:fit-content; }
+.hero-reel-btn:hover { background:rgba(196,149,106,0.15); border-color:rgba(196,149,106,0.85); }
+.hero-reel-btn svg { width:13px; height:13px; fill:#f5f0e8; }
+.hero-bottom { position:relative; z-index:2; display:flex; justify-content:space-between; align-items:flex-end; margin-top:52px; opacity:0; animation:fadeUp 0.8s ease 0.7s forwards; }
+.hero-desc { max-width:340px; color:rgba(255,255,255,0.58); font-size:14px; line-height:1.8; }
+.hero-scroll { display:flex; align-items:center; gap:12px; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.38); }
+.scroll-line { width:48px; height:1px; background:rgba(255,255,255,0.3); display:inline-block; animation:pulse 2s ease-in-out infinite; }
+.magazine { padding:64px 48px; }
+.mag-alt { background:var(--section-bg); border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:64px 48px; }
+.section-label { font-size:9px; letter-spacing:5px; text-transform:uppercase; color:var(--accent); display:flex; align-items:center; gap:14px; margin-bottom:32px; }
+.section-label::before { content:''; width:28px; height:1px; background:var(--accent); }
+.about-grid { display:grid; grid-template-columns:2fr 1fr 1fr; grid-template-rows:auto auto; gap:3px; }
+.ag-hero { grid-column:1; grid-row:1/3; background:var(--ink); color:var(--white); padding:52px 44px; display:flex; flex-direction:column; justify-content:flex-end; min-height:420px; }
+.ag-hero h2 { font-family:'Playfair Display',serif; font-size:clamp(32px,3.5vw,50px); font-weight:400; line-height:1.1; margin-bottom:24px; }
+.ag-hero h2 em { font-style:italic; color:var(--light); }
+.ag-hero p { font-size:13px; color:rgba(245,240,232,0.62); line-height:1.85; }
+.ag-stat { background:var(--off); padding:32px 28px; display:flex; flex-direction:column; justify-content:center; border:1px solid var(--line); }
+.ag-stat .num { font-family:'Playfair Display',serif; font-size:52px; font-weight:400; color:var(--ink); line-height:1; }
+.ag-stat .lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--light); margin-top:6px; }
+.ag-bio { background:var(--white); padding:32px 28px; border:1px solid var(--line); }
+.ag-bio .tag { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--accent2); margin-bottom:10px; }
+.ag-bio h3 { font-family:'Playfair Display',serif; font-size:19px; font-weight:400; margin-bottom:10px; color:var(--ink); line-height:1.3; }
+.ag-bio h3 em { font-style:italic; color:var(--mid); }
+.ag-bio p { font-size:12.5px; color:var(--mid); line-height:1.8; }
+.projects-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; }
+.pg-featured { grid-column:1/3; background:var(--accent); color:var(--white); padding:44px 36px; display:flex; flex-direction:column; justify-content:flex-end; min-height:260px; }
+.pg-featured .proj-num { font-family:'Playfair Display',serif; font-style:italic; font-size:13px; color:rgba(245,240,232,0.45); margin-bottom:12px; }
+.pg-featured .proj-name { font-family:'Playfair Display',serif; font-size:30px; font-weight:400; line-height:1.1; margin-bottom:6px; }
+.pg-featured .proj-detail { font-size:13px; color:rgba(245,240,232,0.65); margin-bottom:18px; }
+.pg-featured .proj-tag { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(245,240,232,0.5); border-top:1px solid rgba(245,240,232,0.18); padding-top:14px; }
+.pg-card { background:var(--off); border:1px solid var(--line); padding:26px 22px; display:flex; flex-direction:column; justify-content:space-between; min-height:170px; transition:background 0.2s; }
+.pg-card:hover { background:var(--white); }
+.pg-card .proj-num { font-family:'Playfair Display',serif; font-style:italic; font-size:11px; color:var(--light); margin-bottom:8px; }
+.pg-card .proj-name { font-family:'Playfair Display',serif; font-size:17px; font-weight:400; color:var(--ink); line-height:1.2; margin-bottom:4px; }
+.pg-card .proj-detail { font-size:11px; color:var(--mid); margin-bottom:14px; }
+.pg-card .proj-tag { font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent); border-top:1px solid var(--line); padding-top:10px; margin-top:auto; }
+.pg-wide { grid-column:span 2; }
+.watch-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; }
+.wg-large { grid-column:span 2; grid-row:span 2; }
+.video-card { display:block; text-decoration:none; background:var(--ink); overflow:hidden; position:relative; }
+.thumb-wrap { position:relative; width:100%; overflow:hidden; aspect-ratio:16/9; }
+.video-card img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.4s ease,opacity 0.3s; opacity:0.82; }
+.video-card:hover img { transform:scale(1.05); opacity:1; }
+.play-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(44,36,22,0.22); opacity:0; transition:opacity 0.25s; }
+.play-overlay span { width:46px; height:46px; border:1.5px solid rgba(255,255,255,0.8); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; padding-left:3px; }
+.video-card:hover .play-overlay { opacity:1; }
+.vid-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); padding:11px 16px; background:var(--ink); }
+.skills-exp-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; }
+.skill-block { background:var(--off); border:1px solid var(--line); padding:30px 26px; }
+.skill-block .sk-label { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--accent); margin-bottom:18px; }
+.skill-block ul { list-style:none; }
+.skill-block ul li { font-size:13px; color:var(--ink); padding:8px 0; border-bottom:1px solid var(--line); }
+.skill-block ul li:last-child { border-bottom:none; }
+.exp-block { background:var(--white); border:1px solid var(--line); padding:30px 26px; }
+.exp-block.dark { background:var(--ink); }
+.exp-block .ep { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--light); margin-bottom:10px; }
+.exp-block.dark .ep { color:rgba(245,240,232,0.38); }
+.exp-block .et { font-family:'Playfair Display',serif; font-size:19px; font-weight:400; color:var(--ink); margin-bottom:4px; }
+.exp-block.dark .et { color:var(--white); }
+.exp-block .eo { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); margin-bottom:12px; }
+.exp-block .ed { font-size:12.5px; color:var(--mid); line-height:1.8; }
+.exp-block.dark .ed { color:rgba(245,240,232,0.52); }
+.contact-section { background:#2c2416; color:var(--white); text-align:center; padding:100px 48px; }
+.contact-section .section-label { color:var(--accent2); justify-content:center; }
+.contact-section .section-label::before { background:var(--accent2); }
+.contact-heading { font-family:'Playfair Display',serif; font-size:clamp(36px,6vw,80px); font-weight:400; line-height:1.1; letter-spacing:-1px; margin-bottom:48px; }
+.contact-heading em { font-style:italic; color:var(--light); }
+.contact-links { display:flex; justify-content:center; gap:48px; flex-wrap:wrap; }
+.contact-link { display:flex; flex-direction:column; gap:6px; text-decoration:none; transition:opacity 0.2s; }
+.contact-link:hover { opacity:0.6; }
+.contact-link-label { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--light); }
+.contact-link-value { font-size:15px; color:var(--white); }
+footer { background:#2c2416; border-top:1px solid rgba(255,255,255,0.06); padding:22px 48px; display:flex; justify-content:space-between; align-items:center; color:rgba(255,255,255,0.2); font-size:11px; letter-spacing:1px; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
+@keyframes pulse { 0%,100%{opacity:0.4;}50%{opacity:1;} }
+.reveal { opacity:0; transform:translateY(20px); transition:opacity 0.6s ease,transform 0.6s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+@media(max-width:900px){
+  nav{padding:18px 24px;} .nav-links{display:none;}
+  .hero{padding:0 24px 56px;} .magazine{padding:48px 24px;} .mag-alt{padding:48px 24px;}
+  .about-grid{grid-template-columns:1fr 1fr;} .ag-hero{grid-column:1/3;grid-row:1;min-height:260px;padding:36px 28px;}
+  .projects-grid{grid-template-columns:1fr 1fr;} .pg-featured{grid-column:1/3;}
+  .watch-grid{grid-template-columns:1fr 1fr;} .wg-large{grid-column:span 2;grid-row:span 1;}
+  .skills-exp-grid{grid-template-columns:1fr 1fr;}
+  .contact-section{padding:72px 24px;} footer{padding:18px 24px;flex-direction:column;gap:8px;text-align:center;}
+  body{cursor:auto;} .cursor,.cursor-ring{display:none;}
+}
+@media(max-width:560px){
+  .about-grid{grid-template-columns:1fr;} .ag-hero{grid-column:1;}
+  .projects-grid{grid-template-columns:1fr;} .pg-featured,.pg-wide{grid-column:1;}
+  .watch-grid{grid-template-columns:1fr;} .wg-large{grid-column:1;grid-row:1;}
+  .skills-exp-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav id="nav">
+  <a href="#" class="nav-logo">Yash Parab</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#watch">Watch</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="hero">
+  <div id="heroVideoFade">
+    <div class="hero-video-wrap">
+      <iframe src="https://player.vimeo.com/video/955443034?autoplay=1&loop=1&muted=1&background=1&autopause=0" allow="autoplay; fullscreen" allowfullscreen title="Yash Parab Showreel"></iframe>
+    </div>
+  </div>
+  <div class="hero-label">Colorist · Mumbai, India</div>
+  <h1 class="hero-name">Yash<br><em>Parab</em></h1>
+  <a href="https://vimeo.com/955443034" target="_blank" class="hero-reel-btn">
+    <svg viewBox="0 0 16 16"><path d="M6 3.5l7 4.5-7 4.5V3.5z"/></svg>
+    Watch Showreel
+  </a>
+  <div class="hero-bottom">
+    <p class="hero-desc">Crafting visual narratives through color — for OTT, film, television, and beyond.</p>
+    <div class="hero-scroll"><span class="scroll-line"></span> Scroll</div>
+  </div>
+</section>
+
+<div id="about" class="magazine">
+  <div class="section-label">About</div>
+  <div class="about-grid">
+    <div class="ag-hero reveal">
+      <h2>Color is the<br><em>soul of a story.</em></h2>
+      <p>Mumbai-based colorist with 5+ years of experience across OTT web series, Bollywood films, television, ads, and music videos. Previously at Akruti Productions (2023–2026), now freelancing independently since 2021.</p>
+    </div>
+    <div class="ag-stat reveal"><span class="num">5+</span><span class="lbl">Years Experience</span></div>
+    <div class="ag-stat reveal"><span class="num">15+</span><span class="lbl">Shows &amp; Films</span></div>
+    <div class="ag-bio reveal">
+      <div class="tag">Studio</div>
+      <h3>Akruti<br><em>Productions</em></h3>
+      <p>Associate to senior colorist Ganesh Navgane, 2023–2026. Full color ops across TV, OTT, films, ads &amp; songs.</p>
+    </div>
+    <div class="ag-bio reveal">
+      <div class="tag">Background</div>
+      <h3>Rooted in<br><em>Cinematography</em></h3>
+      <p>BMM from Mithibai College. Deep understanding of light, exposure, and how frames are built — not just corrected.</p>
+    </div>
+  </div>
+</div>
+
+<div id="projects" class="mag-alt">
+  <div class="section-label">Selected Projects</div>
+  <div class="projects-grid">
+    <div class="pg-featured reveal">
+      <div class="proj-num">01</div>
+      <div class="proj-name">Campus Beats</div>
+      <div class="proj-detail">Season 1, 2 &amp; 3</div>
+      <div class="proj-tag">OTT Web Series · Akruti Productions</div>
+    </div>
+    <div class="pg-card reveal"><div class="proj-num">02</div><div class="proj-name">Jamnapaar</div><div class="proj-detail">Season 1 &amp; 2</div><div class="proj-tag">OTT · Akruti Productions</div></div>
+    <div class="pg-card reveal"><div class="proj-num">03</div><div class="proj-name">Tujhpe Main Fida</div><div class="proj-detail">Season 1 &amp; 2</div><div class="proj-tag">OTT · Akruti Productions</div></div>
+    <div class="pg-card reveal"><div class="proj-num">04</div><div class="proj-name">Oops Ab Kya?</div><div class="proj-detail">Web Series</div><div class="proj-tag">OTT · Akruti Productions</div></div>
+    <div class="pg-card reveal"><div class="proj-num">05</div><div class="proj-name">Farzi Luv Story</div><div class="proj-detail">Web Series</div><div class="proj-tag">OTT · Akruti Productions</div></div>
+    <div class="pg-card pg-wide reveal"><div class="proj-num">06</div><div class="proj-name">Kurla to Vengurla</div><div class="proj-detail">Bollywood Film</div><div class="proj-tag">Film · Akruti Productions</div></div>
+    <div class="pg-card reveal"><div class="proj-num">07</div><div class="proj-name">Jhansi Ka Rajkumar</div><div class="proj-detail">Bollywood Film</div><div class="proj-tag">Film · Akruti Productions</div></div>
+    <div class="pg-card reveal"><div class="proj-num">08</div><div class="proj-name">Rashoman Films</div><div class="proj-detail">Feature Film</div><div class="proj-tag">Film · Rashoman Films</div></div>
+    <div class="pg-card pg-wide reveal"><div class="proj-num">09</div><div class="proj-name">Freelance — Ads, Songs &amp; Social</div><div class="proj-detail">2021–Present</div><div class="proj-tag">Commercial / Music · Various Clients</div></div>
+  </div>
+</div>
+
+<div id="watch" class="magazine">
+  <div class="section-label">Watch My Work</div>
+  <div class="watch-grid">
+    <a href="https://www.youtube.com/watch?v=xNRTQH-DYys" target="_blank" class="video-card wg-large reveal">
+      <div class="thumb-wrap"><img src="https://img.youtube.com/vi/xNRTQH-DYys/mqdefault.jpg" alt="Work 1" loading="lazy"><div class="play-overlay"><span>&#9654;</span></div></div>
+      <div class="vid-label">Watch on YouTube ↗</div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=wPnxOPpxp7Q" target="_blank" class="video-card reveal">
+      <div class="thumb-wrap"><img src="https://img.youtube.com/vi/wPnxOPpxp7Q/mqdefault.jpg" alt="Work 2" loading="lazy"><div class="play-overlay"><span>&#9654;</span></div></div>
+      <div class="vid-label">Watch on YouTube ↗</div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=OUuIBKxSbTo" target="_blank" class="video-card reveal">
+      <div class="thumb-wrap"><img src="https://img.youtube.com/vi/OUuIBKxSbTo/mqdefault.jpg" alt="Work 3" loading="lazy"><div class="play-overlay"><span>&#9654;</span></div></div>
+      <div class="vid-label">Watch on YouTube ↗</div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=MC-eiBfOA4E" target="_blank" class="video-card reveal">
+      <div class="thumb-wrap"><img src="https://img.youtube.com/vi/MC-eiBfOA4E/mqdefault.jpg" alt="Work 4" loading="lazy"><div class="play-overlay"><span>&#9654;</span></div></div>
+      <div class="vid-label">Watch on YouTube ↗</div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=JhFFjTr_L_c" target="_blank" class="video-card reveal">
+      <div class="thumb-wrap"><img src="https://img.youtube.com/vi/JhFFjTr_L_c/mqdefault.jpg" alt="Work 5" loading="lazy"><div class="play-overlay"><span>&#9654;</span></div></div>
+      <div class="vid-label">Watch on YouTube ↗</div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=ISW20GhcLsI" target="_blank" class="video-card reveal">
+      <div class="thumb-wrap"><img src="https://img.youtube.com/vi/ISW20GhcLsI/mqdefault.jpg" alt="Work 6" loading="lazy"><div class="play-overlay"><span>&#9654;</span></div></div>
+      <div class="vid-label">Watch on YouTube ↗</div>
+    </a>
+    <a href="https://www.youtube.com/watch?v=Td2MYclNHHI" target="_blank" class="video-card reveal">
+      <div class="thumb-wrap"><img src="https://img.youtube.com/vi/Td2MYclNHHI/mqdefault.jpg" alt="Work 7" loading="lazy"><div class="play-overlay"><span>&#9654;</span></div></div>
+      <div class="vid-label">Watch on YouTube ↗</div>
+    </a>
+  </div>
+</div>
+
+<div id="skills" class="mag-alt">
+  <div class="section-label">Skills &amp; Experience</div>
+  <div class="skills-exp-grid">
+    <div class="skill-block reveal"><div class="sk-label">Software</div><ul><li>DaVinci Resolve</li><li>Dolby Vision</li><li>Node Workflow</li></ul></div>
+    <div class="skill-block reveal"><div class="sk-label">Color</div><ul><li>Primary Correction</li><li>Secondary Grading</li><li>LUT Creation</li><li>Shot Matching</li></ul></div>
+    <div class="skill-block reveal"><div class="sk-label">Delivery</div><ul><li>HDR / SDR</li><li>OTT Streaming</li><li>Broadcast TV</li><li>Conform &amp; Export</li></ul></div>
+    <div class="skill-block reveal"><div class="sk-label">On Set</div><ul><li>Cinematography</li><li>Camera Operation</li><li>Lighting</li></ul></div>
+    <div class="exp-block reveal"><div class="ep">Apr 2021 — Present</div><div class="et">Freelance Colorist</div><div class="eo">Self-Employed · Mumbai</div><div class="ed">Films, ads, music videos &amp; social media. Full pipeline from conform to multi-format delivery.</div></div>
+    <div class="exp-block dark reveal"><div class="ep">Jul 2023 — May 2026</div><div class="et">Colorist</div><div class="eo">Akruti Productions · Mumbai</div><div class="ed">Associate to Ganesh Navgane. TV, OTT, films, ads &amp; songs — ingest to final delivery.</div></div>
+    <div class="exp-block reveal"><div class="ep">Oct 2022</div><div class="et">Colorist</div><div class="eo">Rashoman Films · Mumbai</div><div class="ed">Color grading for a feature film production.</div></div>
+    <div class="exp-block reveal"><div class="ep">Dec 2019 — Feb 2020</div><div class="et">Cinematographer</div><div class="eo">Cine Katha Kirtan · Vengurla</div><div class="ed">Camera, lighting &amp; composition for a regional production.</div></div>
+  </div>
+</div>
+
+<section id="contact" class="contact-section">
+  <div class="section-label">Get in Touch</div>
+  <h2 class="contact-heading">Let's work<br><em>together.</em></h2>
+  <div class="contact-links">
+    <a href="https://vimeo.com/955443034" target="_blank" class="contact-link"><span class="contact-link-label">Showreel</span><span class="contact-link-value">vimeo.com/955443034</span></a>
+    <a href="https://www.linkedin.com/in/yashparab-854a5118b" target="_blank" class="contact-link"><span class="contact-link-label">LinkedIn</span><span class="contact-link-value">linkedin.com/in/yashparab</span></a>
+    <a href="mailto:yashparabcolor@gmail.com" class="contact-link"><span class="contact-link-label">Email</span><span class="contact-link-value">yashparabcolor@gmail.com</span></a>
+  </div>
+</section>
+
+<footer><span>© 2026 Yash Parab</span><span>Colorist · Mumbai</span></footer>
+
+<script>
+  const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx-4}px,${my-4}px)`;});
+  function animateRing(){rx+=(mx-rx-16)*0.12;ry+=(my-ry-16)*0.12;ring.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(animateRing);}
+  animateRing();
+  const nav=document.getElementById('nav'),fade=document.getElementById('heroVideoFade'),heroEl=document.getElementById('hero');
+  window.addEventListener('scroll',()=>{
+    const s=window.scrollY;
+    nav.classList.toggle('scrolled',s>40);
+    fade.style.opacity=1-Math.min(s/(heroEl.offsetHeight*0.6),1);
+  });
+  const reveals=document.querySelectorAll('.reveal');
+  new IntersectionObserver((entries)=>{
+    entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*55);} });
+  },{threshold:0.08}).observe=function(el){IntersectionObserver.prototype.observe.call(this,el);};
+  const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*55);obs.unobserve(e.target);}});},{threshold:0.08});
+  reveals.forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
