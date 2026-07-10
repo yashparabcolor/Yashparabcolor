@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yash Parab</title>
+
+<style>
+  :root{
+    --bg:        #0B0B0C;
+    --ink:       #ECECE9;
+    --ink-dim:   #7A7A7C;
+    --hair:      #202022;
+    --gap-big:   14vh;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+    font-size:13px;
+    letter-spacing:.02em;
+    overflow-x:hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- HERO / SHOWREEL ---------- */
+
+  #hero{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    background:#000;
+    z-index:1;
+    will-change: opacity, transform;
+    transform-origin: center 30%;
+  }
+
+  #hero .reel-frame{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+  }
+
+  #hero iframe{
+    position:absolute;
+    top:50%; left:50%;
+    width:100vw;
+    height:56.25vw;      /* 16:9 lock */
+    min-height:100vh;
+    min-width:177.78vh;  /* 16:9 lock */
+    transform:translate(-50%,-50%);
+    border:0;
+    pointer-events:none;
+  }
+
+  #hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 70%, rgba(0,0,0,.5) 100%);
+    pointer-events:none;
+  }
+
+  .hero-mark{
+    position:absolute;
+    left:28px;
+    bottom:26px;
+    z-index:2;
+    font-size:12px;
+    color:var(--ink);
+    letter-spacing:.08em;
+  }
+
+  .hero-mark span{
+    color:var(--ink-dim);
+  }
+
+  .timecode{
+    position:absolute;
+    right:28px;
+    bottom:26px;
+    z-index:2;
+    font-size:12px;
+    color:var(--ink-dim);
+    letter-spacing:.1em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scroll-cue{
+    position:absolute;
+    left:50%;
+    bottom:26px;
+    transform:translateX(-50%);
+    z-index:2;
+    font-size:10px;
+    color:var(--ink-dim);
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+
+  .scroll-cue::after{
+    content:"";
+    width:1px;
+    height:26px;
+    background:var(--ink-dim);
+    opacity:.6;
+    animation: cue-pulse 2.2s ease-in-out infinite;
+  }
+
+  @keyframes cue-pulse{
+    0%,100%{ transform:scaleY(.4); opacity:.25; }
+    50%{ transform:scaleY(1); opacity:.7; }
+  }
+
+  /* spacer that lets the fixed hero occupy real scroll height before the gallery begins */
+  #hero-spacer{
+    height:100vh;
+    position:relative;
+    z-index:0;
+  }
+
+  /* ---------- GALLERY ---------- */
+
+  #gallery{
+    position:relative;
+    z-index:2;
+    background:var(--bg);
+    padding: 10vh 20px calc(10vh + 40px);
+  }
+
+  .cluster{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:14px;
+    margin:0 auto;
+    max-width:1400px;
+  }
+
+  .cluster + .cluster-gap{
+    height:var(--gap-big);
+  }
+
+  .still{
+    position:relative;
+    overflow:hidden;
+    background:#111;
+    aspect-ratio:3/2;
+  }
+
+  .still img{
+    position:relative;
+    z-index:1;
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition: transform .6s cubic-bezier(.2,.7,.2,1);
+    filter:saturate(.94) contrast(1.02);
+  }
+
+  .chan{
+    position:absolute;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    mix-blend-mode:screen;
+    opacity:0;
+    transition:opacity .35s ease, transform .35s ease;
+    pointer-events:none;
+  }
+
+  .chan-r{ filter:url(#chanR); transform:translateX(0); }
+  .chan-b{ filter:url(#chanB); transform:translateX(0); }
+
+  .still:hover img{ transform:scale(1.035); }
+  .still:hover .chan-r{ opacity:.55; transform:translateX(-4px); }
+  .still:hover .chan-b{ opacity:.55; transform:translateX(4px); }
+
+  /* layout patterns */
+  .p-hero  .still{ grid-column: span 12; aspect-ratio:21/9; }
+  .p-trio  .still{ grid-column: span 4; }
+  .p-wide  .still:nth-child(1){ grid-column: span 8; }
+  .p-wide  .still:nth-child(2){ grid-column: span 4; }
+  .p-duo   .still{ grid-column: span 6; }
+  .p-quad  .still{ grid-column: span 3; }
+
+  @media (max-width: 780px){
+    .p-trio .still,
+    .p-quad .still{ grid-column: span 6; }
+    .p-wide .still:nth-child(1),
+    .p-wide .still:nth-child(2){ grid-column: span 12; }
+    .p-duo .still{ grid-column: span 12; }
+    .p-hero .still{ aspect-ratio:4/5; }
+  }
+
+  /* ---------- VIDEO CLUSTER ---------- */
+
+  #videos{
+    position:relative;
+    z-index:2;
+    background:var(--bg);
+    max-width:1400px;
+    margin:0 auto;
+    padding:0 20px calc(10vh + 20px);
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+
+  .vclip{
+    position:relative;
+    overflow:hidden;
+    background:#111;
+    aspect-ratio:16/9;
+    text-decoration:none;
+  }
+
+  .vclip:first-child{
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .vclip img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    filter:brightness(.72) saturate(.9);
+    transition:filter .4s ease, transform .5s ease;
+  }
+
+  .vclip:hover img{
+    filter:brightness(.95) saturate(1);
+    transform:scale(1.03);
+  }
+
+  .vclip::after{
+    content:"";
+    position:absolute;
+    top:50%; left:50%;
+    width:34px; height:34px;
+    transform:translate(-50%,-50%);
+    border:1px solid rgba(236,236,233,.7);
+    border-radius:50%;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+
+  .vclip::before{
+    content:"";
+    position:absolute;
+    top:50%; left:calc(50% + 2px);
+    width:0; height:0;
+    transform:translate(-50%,-50%);
+    border-style:solid;
+    border-width:6px 0 6px 9px;
+    border-color:transparent transparent transparent rgba(236,236,233,.9);
+    opacity:0;
+    transition:opacity .25s ease;
+    z-index:1;
+  }
+
+  .vclip:hover::after,
+  .vclip:hover::before{
+    opacity:1;
+  }
+
+  @media (max-width:780px){
+    #videos{ grid-template-columns:repeat(2,1fr); }
+    .vclip:first-child{ grid-column:span 2; grid-row:span 1; }
+  }
+
+  /* ---------- FOOTER ---------- */
+
+  footer{
+    position:relative;
+    z-index:2;
+    background:var(--bg);
+    border-top:1px solid var(--hair);
+    padding:40px 28px 60px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:20px;
+  }
+
+  footer .name{
+    font-size:13px;
+    color:var(--ink);
+    letter-spacing:.08em;
+  }
+
+  footer .links{
+    display:flex;
+    gap:22px;
+  }
+
+  footer .links a{
+    color:var(--ink-dim);
+    text-decoration:none;
+    font-size:12px;
+    letter-spacing:.06em;
+    border-bottom:1px solid transparent;
+    transition:color .2s ease, border-color .2s ease;
+  }
+
+  footer .links a:hover{
+    color:var(--ink);
+    border-color:var(--ink-dim);
+  }
+
+  a:focus-visible, .still:focus-visible{
+    outline: 1px solid var(--ink);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+<!-- hidden SVG filters powering the per-channel hover split -->
+<svg width="0" height="0" style="position:absolute">
+  <filter id="chanR">
+    <feColorMatrix type="matrix" values="
+      1 0 0 0 0
+      0 0 0 0 0
+      0 0 0 0 0
+      0 0 0 1 0"/>
+  </filter>
+  <filter id="chanB">
+    <feColorMatrix type="matrix" values="
+      0 0 0 0 0
+      0 0 0 0 0
+      0 0 1 0 0
+      0 0 0 1 0"/>
+  </filter>
+</svg>
+
+<div id="hero">
+  <div class="reel-frame">
+    <iframe id="reel"
+      src="https://player.vimeo.com/video/955443034?autoplay=1&muted=1&loop=0&controls=0&title=0&byline=0&portrait=0&dnt=1&background=0"
+      allow="autoplay; fullscreen"
+      title="showreel">
+    </iframe>
+  </div>
+  <div class="hero-mark">yash parab <span>/ colorist</span></div>
+  <div class="timecode" id="timecode">00:00:00:00</div>
+  <div class="scroll-cue">scroll</div>
+</div>
+
+<div id="hero-spacer"></div>
+
+<main id="gallery"></main>
+
+<div id="videos"></div>
+
+<footer>
+  <div class="name">Yash Parab</div>
+  <div class="links">
+    <a href="https://vimeo.com/955443034" target="_blank" rel="noopener">Vimeo</a>
+    <a href="https://www.linkedin.com/in/yashparab-854a5118b" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="mailto:yashparabcolor@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script src="https://player.vimeo.com/api/player.js"></script>
+<script>
+  /* ---------------- Hero scroll fade ---------------- */
+  const hero = document.getElementById('hero');
+  let ticking = false;
+
+  function updateHeroFade(){
+    const y = window.scrollY;
+    const vh = window.innerHeight;
+    const progress = Math.min(Math.max(y / vh, 0), 1);
+    hero.style.opacity = String(1 - progress);
+    hero.style.transform = `scale(${1 - progress * 0.08})`;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if(!ticking){
+      requestAnimationFrame(updateHeroFade);
+      ticking = true;
+    }
+  }, { passive:true });
+
+  /* ---------------- Vimeo timecode readout ---------------- */
+  try{
+    const iframe = document.getElementById('reel');
+    const player = new Vimeo.Player(iframe);
+    const tc = document.getElementById('timecode');
+
+    function fmt(t){
+      const totalFrames = Math.floor(t * 24);
+      const ff = totalFrames % 24;
+      const totalSeconds = Math.floor(t);
+      const ss = totalSeconds % 60;
+      const mm = Math.floor(totalSeconds / 60) % 60;
+      const hh = Math.floor(totalSeconds / 3600);
+      const pad = n => String(n).padStart(2,'0');
+      return `${pad(hh)}:${pad(mm)}:${pad(ss)}:${pad(ff)}`;
+    }
+
+    player.on('timeupdate', data => { tc.textContent = fmt(data.seconds); });
+    player.on('ended', () => { /* holds on last frame, no loop */ });
+  }catch(e){ /* player api unavailable, timecode stays static */ }
+
+  /* ---------------- Video cluster build ---------------- */
+  const reels = [
+    'xNRTQH-DYys','wPnxOPpxp7Q','OUuIBKxSbTo',
+    'MC-eiBfOA4E','JhFFjTr_L_c','ISW20GhcLsI','Td2MYclNHHI'
+  ];
+
+  const videosEl = document.getElementById('videos');
+  for (const id of reels){
+    const a = document.createElement('a');
+    a.className = 'vclip';
+    a.href = `https://www.youtube.com/watch?v=${id}`;
+    a.target = '_blank';
+    a.rel = 'noopener';
+
+    const img = document.createElement('img');
+    img.src = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+    img.loading = 'lazy';
+    img.alt = '';
+
+    a.appendChild(img);
+    videosEl.appendChild(a);
+  }
+
+  /* ---------------- Gallery build ---------------- */
+  const TOTAL_IMAGES = 53;
+  const images = Array.from({length: TOTAL_IMAGES}, (_,i) => `images/img${String(i+1).padStart(2,'0')}.jpg`);
+
+  // cluster rhythm: each entry is [layoutClass, imageCount] — one entry = one untitled cluster
+  const rhythm = [
+    ['p-hero', 1],
+    ['p-trio', 3],
+    ['p-wide', 2],
+    ['p-quad', 4],
+    ['p-duo',  2],
+    ['p-trio', 3],
+    ['p-hero', 1],
+    ['p-quad', 4],
+    ['p-wide', 2],
+    ['p-duo',  2],
+    ['p-trio', 3],
+    ['p-hero', 1],
+    ['p-quad', 4],
+    ['p-trio', 3],
+    ['p-wide', 2],
+    ['p-duo',  2],
+    ['p-trio', 3],
+    ['p-quad', 4],
+    ['p-hero', 1],
+    ['p-duo',  2],
+    ['p-wide', 2],
+    ['p-trio', 3],
+  ];
+
+  const gallery = document.getElementById('gallery');
+  let cursor = 0;
+
+  for (const [layout, count] of rhythm){
+    if (cursor >= images.length) break;
+    const slice = images.slice(cursor, cursor + count);
+    if (slice.length === 0) break;
+    cursor += slice.length;
+
+    const cluster = document.createElement('div');
+    cluster.className = `cluster ${layout}`;
+
+    for (const src of slice){
+      const still = document.createElement('div');
+      still.className = 'still';
+      still.tabIndex = 0;
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.loading = 'lazy';
+      img.alt = '';
+
+      const chanR = document.createElement('div');
+      chanR.className = 'chan chan-r';
+      chanR.style.backgroundImage = `url(${src})`;
+
+      const chanB = document.createElement('div');
+      chanB.className = 'chan chan-b';
+      chanB.style.backgroundImage = `url(${src})`;
+
+      still.appendChild(img);
+      still.appendChild(chanR);
+      still.appendChild(chanB);
+      cluster.appendChild(still);
+    }
+
+    gallery.appendChild(cluster);
+
+    if (cursor < images.length){
+      const gap = document.createElement('div');
+      gap.className = 'cluster-gap';
+      gallery.appendChild(gap);
+    }
+  }
+</script>
+
+</body>
+</html>
